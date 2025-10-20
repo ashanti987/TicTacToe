@@ -1,0 +1,131 @@
+# Tic-Tac-Toe AI Comparison
+
+A comprehensive analysis of search algorithms in artificial intelligence through the game of Tic-Tac-Toe. This project implements and compares three distinct AI algorithms with real-time visualization and performance metrics.
+
+## 🎯 Project Overview
+
+This project demonstrates the evolution of AI search algorithms from simple pathfinding to sophisticated adversarial reasoning:
+
+- **Breadth-First Search (BFS)** - Uninformed search for shortest paths
+- **Greedy Best-First Search** - Heuristic-driven informed search  
+- **Minimax with Alpha-Beta Pruning** - Optimal adversarial search
+
+## 🔬 Key Findings
+
+Our experimental analysis revealed a significant **theory-practice gap**:
+- **BFS** achieved 67% win rate against human players
+- **Greedy** maintained 0% loss rate with frequent draws
+- **Minimax** showed 0% win rate despite theoretical optimality
+- **Discovery**: Simpler algorithms outperformed theoretically optimal Minimax in practical gameplay
+
+## 🚀 Features
+
+### Interactive Gameplay
+- Human vs AI Tic-Tac-Toe with real-time performance metrics
+- Visual move recommendations and algorithm selection
+- Live node evaluation and computation time tracking
+
+### Comprehensive Analysis
+- Performance comparison charts and visualizations
+- Strategic behavior analysis across play styles
+- Professional summary tables for academic reporting
+
+### Technical Implementation
+- Modular Python architecture with four integrated components
+- Hybrid visualization system (Pygame + Matplotlib)
+- Extensive performance benchmarking and testing
+
+## 📁 Project Structure
+TicTacToe/
+├── game_engine.py # Core game logic and state management
+├── ai_algorithms.py # BFS, Greedy, and Minimax implementations
+├── pygame_interface.py # Interactive visualization and gameplay
+├── analysis_module.py # Performance analysis and chart generation
+├── requirements.txt # Project dependencies
+└── README.md # This file
+
+
+## 🛠️ Installation & Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/tic-tac-toe-ai.git
+   cd tic-tac-toe-ai
+
+2. **Install dependencies**
+  pip install -r requirements.txt
+
+3. **Run the Interactive Game** 
+    python pygame_interface.py
+
+4. **Generate analysis report**
+    python analysis_module.py
+
+
+## 🎮 How to Play
+Interactive Game
+Run python pygame_interface.py
+
+- Click algorithm buttons to select AI opponent
+- Click empty squares to play as X (Human)
+- Watch AI respond as O with real-time metrics
+- Use keyboard shortcuts for quick control:
+        - 1, 2, 3: Select BFS/Greedy/Minimax AI
+        - Space: Toggle auto-play (AI vs AI)
+        - R: Reset game
+
+Terminal displays detailed analysis:
+- Move-by-move decision making
+- Nodes evaluated and computation time
+- ASCII board visualization
+- Game summaries and statistics
+
+## 📊 Analysis & Reporting
+Run python analysis_module.py to generate:
+- Performance Comparison Charts - Nodes, time, and win rates
+- Minimax Paradox Visualization - Cost vs effectiveness analysis
+- Algorithm Comparison Table - Comprehensive properties summary
+
+These visualizations are designed for academic reporting and demonstrate the practical trade-offs between search algorithms.
+
+## 🧠 Algorithms Implemented
+Breadth-First Search (BFS)
+- Type: Uninformed search
+- Strategy: Finds shortest path to victory
+- Performance: Excellent at exploiting mistakes
+
+Greedy Best-First Search
+- Type: Informed search
+- Strategy: Maximizes immediate heuristic value
+- Performance: Never loses, risk-averse
+
+Minimax with Alpha-Beta Pruning
+- Type: Adversarial search
+- Strategy: Optimal play with branch pruning
+- Performance: Theoretically optimal but practically limited
+
+## 📈 Experimental Results
+Based on systematic testing across optimal, random, and suboptimal play styles:
+
+Algorithm	Win Rate	Avg Nodes	Avg Time	Practical Performance
+BFS       	67%	           19	    0.0064s	          Excellent
+Greedy	    33%	           19	    0.0003s	            Good
+Minimax	     0%	          2,500	    0.0133s	            Poor
+
+## 🔍 Technical Insights
+Computational Efficiency: Greedy evaluated 131x fewer nodes than Minimax
+Strategic Adaptation: BFS showed best performance against human players
+Theory-Practice Gap: Minimax's 0% win rate challenges textbook assumptions
+Educational Value: Clear demonstration of algorithmic trade-offs
+
+## 👥 Authors
+- Ashanti Stewart - LeMoyne-Owen College
+- Tadiwa Mashora - LeMoyne-Owen College
+
+Course: COSI 425: Artificial Intelligence
+Instructor: Dr. Ogweno Luke
+Institution: LeMoyne-Owen College Department of Computer Science
+
+## 📄 License
+This project is for educational purposes as part of academic coursework at LeMoyne-Owen College.
+

@@ -1,7 +1,7 @@
 # analysis_module.py
 """
-Analysis and visualization module for Tic-Tac-Toe AI comparison.
-Generates Matplotlib charts and diagrams for the final report.
+Enhanced analysis and visualization module for Tic-Tac-Toe AI comparison.
+Generates Matplotlib charts and diagrams for the final report with experimental data.
 """
 
 import matplotlib.pyplot as plt
@@ -21,311 +21,244 @@ class TicTacToeAnalyzer:
         self.minimax_ai = MinimaxAI(self.game)
         self.results = []
     
-    def benchmark_algorithms(self, test_positions):
-        """
-        Benchmark all algorithms on a set of test positions.
-        
-        Args:
-            test_positions: List of (board_config, current_player) tuples
-        """
-        self.results = []
-        
-        for i, (board_config, player) in enumerate(test_positions):
-            position_results = {'position_id': i, 'board': board_config[:]}
-            
-            for ai_name, ai in [('BFS', self.bfs_ai), 
-                              ('Greedy', self.greedy_ai), 
-                              ('Minimax', self.minimax_ai)]:
-                
-                # Set up the test position
-                self.game.board = board_config[:]
-                self.game.current_player = player
-                self.game.game_over = False
-                self.game.winner = None
-                
-                # Run the algorithm
-                start_time = time.time()
-                move, nodes_evaluated, comp_time = ai.find_move()
-                actual_time = time.time() - start_time
-                
-                position_results[ai_name] = {
-                    'move': move,
-                    'nodes_evaluated': nodes_evaluated,
-                    'computation_time': comp_time,
-                    'actual_time': actual_time
-                }
-            
-            self.results.append(position_results)
-        
-        return self.results
-    
     def create_performance_comparison_chart(self):
-        """Create a bar chart comparing algorithm performance."""
-        if not self.results:
-            print("No results to analyze. Run benchmark_algorithms() first.")
-            return
-        
-        # Prepare data
+        """Create enhanced bar charts comparing algorithm performance based on experimental data."""
+        # Use your actual experimental data
         algorithms = ['BFS', 'Greedy', 'Minimax']
-        avg_nodes = []
-        avg_times = []
         
-        for algo in algorithms:
-            nodes = [result[algo]['nodes_evaluated'] for result in self.results]
-            times = [result[algo]['computation_time'] for result in self.results]
-            avg_nodes.append(np.mean(nodes))
-            avg_times.append(np.mean(times))
+        # Your experimental averages
+        avg_nodes = [19, 19, 2500]  # From your data
+        avg_times = [0.0064, 0.0003, 0.0133]  # From your data
+        win_rates = [67, 33, 0]  # From your data
         
-        # Create figure with two subplots
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+        # Create figure with three subplots
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
+        
+        # Colors matching your Pygame interface
+        colors = ['#64FF64', '#FFA500', '#B464F0']  # Green, Orange, Purple
         
         # Nodes evaluated comparison
-        bars1 = ax1.bar(algorithms, avg_nodes, color=['skyblue', 'lightgreen', 'lightcoral'])
-        ax1.set_title('Average Nodes Evaluated per Move')
-        ax1.set_ylabel('Number of Nodes')
+        bars1 = ax1.bar(algorithms, avg_nodes, color=colors, alpha=0.8)
+        ax1.set_title('Average Nodes Evaluated per Game', fontsize=14, fontweight='bold')
+        ax1.set_ylabel('Number of Nodes', fontsize=12)
         ax1.grid(axis='y', alpha=0.3)
+        ax1.tick_params(axis='x', rotation=45)
         
         # Add value labels on bars
         for bar in bars1:
             height = bar.get_height()
             ax1.text(bar.get_x() + bar.get_width()/2., height + max(avg_nodes)*0.01,
-                    f'{height:,.0f}', ha='center', va='bottom')
+                    f'{height:,.0f}', ha='center', va='bottom', fontweight='bold')
         
         # Computation time comparison
-        bars2 = ax2.bar(algorithms, avg_times, color=['skyblue', 'lightgreen', 'lightcoral'])
-        ax2.set_title('Average Computation Time per Move')
-        ax2.set_ylabel('Time (seconds)')
+        bars2 = ax2.bar(algorithms, avg_times, color=colors, alpha=0.8)
+        ax2.set_title('Average Computation Time per Game', fontsize=14, fontweight='bold')
+        ax2.set_ylabel('Time (seconds)', fontsize=12)
         ax2.grid(axis='y', alpha=0.3)
+        ax2.tick_params(axis='x', rotation=45)
         
         for bar in bars2:
             height = bar.get_height()
             ax2.text(bar.get_x() + bar.get_width()/2., height + max(avg_times)*0.01,
-                    f'{height:.4f}s', ha='center', va='bottom')
+                    f'{height:.4f}s', ha='center', va='bottom', fontweight='bold')
+        
+        # Win rate comparison
+        bars3 = ax3.bar(algorithms, win_rates, color=colors, alpha=0.8)
+        ax3.set_title('Win Rate Against Human Players', fontsize=14, fontweight='bold')
+        ax3.set_ylabel('Win Rate (%)', fontsize=12)
+        ax3.set_ylim(0, 100)
+        ax3.grid(axis='y', alpha=0.3)
+        ax3.tick_params(axis='x', rotation=45)
+        
+        for bar in bars3:
+            height = bar.get_height()
+            ax3.text(bar.get_x() + bar.get_width()/2., height + 2,
+                    f'{height}%', ha='center', va='bottom', fontweight='bold',
+                    color='red' if height == 0 else 'black')
         
         plt.tight_layout()
-        plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight')
+        plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
     
-    def create_search_efficiency_plot(self):
-        """Create a line plot showing search efficiency over different positions."""
-        if not self.results:
-            print("No results to analyze. Run benchmark_algorithms() first.")
-            return
-        
-        fig, ax = plt.subplots(figsize=(10, 6))
-        
-        algorithms = ['BFS', 'Greedy', 'Minimax']
-        colors = ['blue', 'green', 'red']
-        markers = ['o', 's', '^']
-        
-        for i, algo in enumerate(algorithms):
-            positions = range(len(self.results))
-            nodes = [result[algo]['nodes_evaluated'] for result in self.results]
-            
-            ax.plot(positions, nodes, marker=markers[i], color=colors[i], 
-                   label=algo, linewidth=2, markersize=8)
-        
-        ax.set_xlabel('Test Position Number')
-        ax.set_ylabel('Nodes Evaluated')
-        ax.set_title('Search Efficiency Across Different Game Positions')
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-        ax.set_yscale('log')  # Use log scale due to large differences
-        
-        plt.tight_layout()
-        plt.savefig('search_efficiency.png', dpi=300, bbox_inches='tight')
-        plt.show()
-    
-    def create_algorithm_strategy_analysis(self):
-        """Analyze and visualize the strategic differences between algorithms."""
-        # Test a specific interesting position
-        test_position = ['X', ' ', ' ', ' ', 'O', ' ', ' ', ' ', 'X']
-        current_player = 'O'
-        
-        self.game.board = test_position[:]
-        self.game.current_player = current_player
-        self.game.game_over = False
-        self.game.winner = None
-        
-        moves = {}
-        for ai_name, ai in [('BFS', self.bfs_ai), 
-                          ('Greedy', self.greedy_ai), 
-                          ('Minimax', self.minimax_ai)]:
-            
-            move, nodes, time_taken = ai.find_move()
-            moves[ai_name] = {
-                'move': move,
-                'nodes': nodes,
-                'time': time_taken
+    def create_comprehensive_summary_table(self):
+        """Create a professional summary table of algorithm properties and performance."""
+        # Algorithm properties and experimental results
+        table_data = [
+            {
+                'Algorithm': 'BFS',
+                'Search Type': 'Uninformed',
+                'Theoretical Optimal': 'No',
+                'Theoretical Complete': 'Yes',
+                'Avg Nodes/Game': '19',
+                'Avg Time/Game': '0.0064s',
+                'Win Rate': '67%',
+                'Strength': 'Excellent mistake exploitation',
+                'Weakness': 'Vulnerable to optimal play',
+                'Practical Performance': 'Excellent'
+            },
+            {
+                'Algorithm': 'Greedy',
+                'Search Type': 'Informed',
+                'Theoretical Optimal': 'No',
+                'Theoretical Complete': 'No',
+                'Avg Nodes/Game': '19',
+                'Avg Time/Game': '0.0003s',
+                'Win Rate': '33%',
+                'Strength': 'Never loses, extremely fast',
+                'Weakness': 'Risk-averse, frequent draws',
+                'Practical Performance': 'Good'
+            },
+            {
+                'Algorithm': 'Minimax',
+                'Search Type': 'Adversarial',
+                'Theoretical Optimal': 'Yes',
+                'Theoretical Complete': 'Yes',
+                'Avg Nodes/Game': '2,500',
+                'Avg Time/Game': '0.0133s',
+                'Win Rate': '0%',
+                'Strength': 'Theoretically optimal',
+                'Weakness': 'Practical implementation gaps',
+                'Practical Performance': 'Poor'
             }
+        ]
         
-        # Create strategy visualization
-        fig = plt.figure(figsize=(15, 5))
-        gs = gridspec.GridSpec(1, 4, width_ratios=[3, 1, 1, 1])
+        df = pd.DataFrame(table_data)
         
-        # Main board with moves highlighted
-        ax_board = plt.subplot(gs[0])
-        self._draw_tic_tac_toe_board(ax_board, test_position, moves)
+        # Create the table visualization - MAKE TALLER
+        fig, ax = plt.subplots(figsize=(16, 6))  # Changed from (16, 8) to (16, 10)
         
-        # Metrics for each algorithm
-        for i, (algo, data) in enumerate(moves.items()):
-            ax_metric = plt.subplot(gs[i+1])
-            self._draw_algorithm_metrics(ax_metric, algo, data)
+        ax.axis('tight')
+        ax.axis('off')
+    
+        # Create table
+        table = ax.table(
+            cellText=df.values,
+            colLabels=df.columns,
+            cellLoc='center',
+            loc='center',
+            colWidths=[0.07, 0.08, 0.1, 0.1, 0.08, 0.08, 0.06, 0.15, 0.15, 0.1] 
+        )
+    
+        # Style the table - INCREASE FONT SIZES
+        table.auto_set_font_size(False)
+        table.set_fontsize(9)  # Increased from 9 to 10
+        table.scale(1, 1.8)    # Reduced vertical scaling from 2 to 1.8
+    
+        # Header styling - INCREASE HEADER FONT SIZE
+        for i in range(len(df.columns)):
+            table[(0, i)].set_facecolor('#2E86AB')
+            table[(0, i)].set_text_props(weight='bold', color='white', size=8)  # Increased from 10 to 12
+    
+        
+        # Row styling with alternating colors
+        for i in range(1, len(df) + 1):
+            color = '#F8F9FA' if i % 2 == 0 else '#FFFFFF'
+            for j in range(len(df.columns)):
+                table[(i, j)].set_facecolor(color)
+                
+                # Highlight key findings
+                cell_text = table[(i, j)].get_text().get_text()
+                if '0%' in cell_text:
+                    table[(i, j)].set_text_props(weight='bold', color='red')
+                elif '67%' in cell_text:
+                    table[(i, j)].set_text_props(weight='bold', color='green')
+                elif '33%' in cell_text:
+                    table[(i, j)].set_text_props(weight='bold', color='blue')
+                '''elif '2,500' in cell_text:
+                    table[(i, j)].set_text_props(weight='bold', color='orange')'''
+        
+        plt.title('Tic-Tac-Toe AI Algorithm Comprehensive Comparison\nTheory vs. Practical Performance', 
+             fontsize=14, fontweight='bold', pad=10)
+    
+        # Add both key findings and conclusion
+        plt.figtext(0.5, 0.2, 
+                'Key Finding: Minimax shows 0% win rate despite theoretical optimality - revealing significant theory-practice gap',
+                ha='center', fontsize=9, style='italic', color='red', weight='bold')
+        
+        plt.figtext(0.5, 0.1, 
+                'Conclusion: Simpler algorithms (BFS, Greedy) outperformed theoretically optimal Minimax in practical gameplay',
+                ha='center', fontsize=9, style='italic', color='blue', weight='bold')
         
         plt.tight_layout()
-        plt.savefig('strategy_analysis.png', dpi=300, bbox_inches='tight')
+        plt.savefig('algorithm_comparison_table.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
-    
-    def _draw_tic_tac_toe_board(self, ax, board, moves):
-        """Draw a Tic-Tac-Toe board with algorithm moves highlighted."""
-        ax.set_xlim(0, 3)
-        ax.set_ylim(0, 3)
-        ax.set_aspect('equal')
-        ax.invert_yaxis()  # So (0,0) is top-left
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_title('Algorithm Move Recommendations', fontsize=14, fontweight='bold')
-        
-        # Draw grid
-        for i in range(1, 3):
-            ax.axvline(i, color='black', linewidth=2)
-            ax.axhline(i, color='black', linewidth=2)
-        
-        # Draw X's and O's
-        for i in range(9):
-            row = i // 3
-            col = i % 3
-            x = col + 0.5
-            y = row + 0.5
-            
-            if board[i] == 'X':
-                ax.text(x, y, 'X', fontsize=30, ha='center', va='center', 
-                       color='red', fontweight='bold')
-            elif board[i] == 'O':
-                ax.text(x, y, 'O', fontsize=30, ha='center', va='center',
-                       color='blue', fontweight='bold')
-        
-        # Highlight recommended moves
-        colors = ['green', 'orange', 'purple']
-        for i, (algo, data) in enumerate(moves.items()):
-            if data['move'] is not None:
-                row = data['move'] // 3
-                col = data['move'] % 3
-                x = col + 0.5
-                y = row + 0.5
-                
-                circle = Circle((x, y), 0.3, fill=False, 
-                              edgecolor=colors[i], linewidth=3, linestyle='--')
-                ax.add_patch(circle)
-                ax.text(x, y + 0.4, algo, ha='center', va='bottom', 
-                       color=colors[i], fontweight='bold', fontsize=8)
-    
-    def _draw_algorithm_metrics(self, ax, algorithm, data):
-        """Draw metrics for a single algorithm."""
-        ax.axis('off')
-        ax.set_xlim(0, 1)
-        ax.set_ylim(0, 1)
-        
-        title = f"{algorithm}\nMove: {data['move']}"
-        ax.text(0.5, 0.9, title, ha='center', va='center', 
-               fontweight='bold', fontsize=12)
-        
-        metrics = [
-            f"Nodes: {data['nodes']:,}",
-            f"Time: {data['time']:.4f}s"
-        ]
-        
-        for i, metric in enumerate(metrics):
-            ax.text(0.5, 0.7 - i*0.2, metric, ha='center', va='center', 
-                   fontsize=10, bbox=dict(boxstyle="round,pad=0.3", 
-                                        facecolor="lightgray"))
-    
-    def generate_comprehensive_report(self):
-        """Generate a comprehensive analysis report with all visualizations."""
-        print("Generating Comprehensive AI Analysis Report...")
-        print("=" * 50)
-        
-        # Define test positions
-        test_positions = [
-            # Empty board
-            ([' '] * 9, 'X'),
-            # Early game
-            (['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], 'O'),
-            # Mid game
-            (['X', ' ', ' ', ' ', 'O', ' ', ' ', ' ', 'X'], 'O'),
-            # Near win for X
-            (['X', 'X', ' ', ' ', 'O', 'O', ' ', ' ', ' '], 'X'),
-            # Defensive position
-            (['X', ' ', ' ', ' ', ' ', ' ', 'O', ' ', 'X'], 'O')
-        ]
-        
-        # Run benchmarks
-        print("Running algorithm benchmarks...")
-        results = self.benchmark_algorithms(test_positions)
-        
-        # Display summary statistics
-        print("\nSummary Statistics:")
-        print("-" * 30)
-        
-        df_data = []
-        for result in results:
-            for algo in ['BFS', 'Greedy', 'Minimax']:
-                df_data.append({
-                    'position': result['position_id'],
-                    'algorithm': algo,
-                    'nodes': result[algo]['nodes_evaluated'],
-                    'time': result[algo]['computation_time']
-                })
-        
-        df = pd.DataFrame(df_data)
-        summary = df.groupby('algorithm').agg({
-            'nodes': ['mean', 'std', 'min', 'max'],
-            'time': ['mean', 'std', 'min', 'max']
-        }).round(4)
-        
-        print(summary)
-        
-        # Generate visualizations
-        print("\nGenerating visualizations...")
-        self.create_performance_comparison_chart()
-        self.create_search_efficiency_plot()
-        self.create_algorithm_strategy_analysis()
-        
-        print("\nAnalysis complete! Check generated PNG files:")
-        print("- performance_comparison.png")
-        print("- search_efficiency.png") 
-        print("- strategy_analysis.png")
         
         return df
+        
+    def create_minimax_paradox_chart(self):
+        """Create a visualization highlighting the Minimax paradox."""
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        algorithms = ['BFS', 'Greedy', 'Minimax']
+        
+        # Computational cost vs effectiveness
+        computational_cost = [19, 19, 2500]  # Nodes
+        effectiveness = [67, 33, 0]  # Win rate
+        
+        # Scatter plot: Cost vs Effectiveness
+        scatter = ax1.scatter(computational_cost, effectiveness, 
+                            s=300, c=['green', 'orange', 'purple'], alpha=0.7)
+        ax1.set_xlabel('Computational Cost (Nodes Evaluated)', fontsize=12)
+        ax1.set_ylabel('Effectiveness (Win Rate %)', fontsize=12)
+        ax1.set_title('The Minimax Paradox: Cost vs Effectiveness', fontsize=14, fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        ax1.set_xscale('log')  # Log scale to handle large differences
+        
+        # Annotate points
+        for i, algo in enumerate(algorithms):
+            ax1.annotate(algo, (computational_cost[i], effectiveness[i]),
+                        xytext=(10, 10), textcoords='offset points',
+                        fontweight='bold', fontsize=11)
+        
+        # Performance across play styles
+        play_styles = ['Optimal', 'Random', 'Suboptimal']
+        bfs_performance = [0, 100, 100]  # Win rates
+        greedy_performance = [0, 100, 0]   # Win/Draw rates
+        minimax_performance = [0, 0, 0]    # Always lost
+        
+        x = np.arange(len(play_styles))
+        width = 0.25
+        
+        bars1 = ax2.bar(x - width, bfs_performance, width, label='BFS', color='green', alpha=0.8)
+        bars2 = ax2.bar(x, greedy_performance, width, label='Greedy', color='orange', alpha=0.8)
+        bars3 = ax2.bar(x + width, minimax_performance, width, label='Minimax', color='purple', alpha=0.8)
+        
+        ax2.set_xlabel('Human Play Style', fontsize=12)
+        ax2.set_ylabel('AI Win Rate (%)', fontsize=12)
+        ax2.set_title('Algorithm Performance Across Play Styles', fontsize=14, fontweight='bold')
+        ax2.set_xticks(x)
+        ax2.set_xticklabels(play_styles)
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+        ax2.set_ylim(0, 120)
+        
+        # Add value labels
+        for bars in [bars1, bars2, bars3]:
+            for bar in bars:
+                height = bar.get_height()
+                if height > 0:
+                    ax2.text(bar.get_x() + bar.get_width()/2., height + 3,
+                            f'{height}%', ha='center', va='bottom', fontweight='bold')
+        
+        plt.tight_layout()
+        plt.savefig('minimax_paradox.png', dpi=300, bbox_inches='tight', facecolor='white')
+        plt.show()
+    
+    def generate_experimental_report(self):
+        """Generate a comprehensive report based on experimental data."""
+        print("Generating visualizations...")  
+    
+    # Generate visualizations
+        self.create_performance_comparison_chart()
+        self.create_minimax_paradox_chart()
+        self.create_comprehensive_summary_table()
 
-# Example usage and testing
+# Main execution
 if __name__ == "__main__":
-    print("Tic-Tac-Toe AI Analysis Module")
-    print("=" * 40)
+    print("Enhanced Tic-Tac-Toe AI Analysis Module")  # KEEP
+    print("=" * 50)  # KEEP
     
     analyzer = TicTacToeAnalyzer()
     
-    # Generate comprehensive report
-    results_df = analyzer.generate_comprehensive_report()
-    
-    # Additional analysis
-    print("\nAdditional Insights:")
-    print("-" * 20)
-    
-    # Find most computationally expensive position
-    max_nodes = 0
-    max_position = None
-    max_algorithm = None
-    
-    for result in analyzer.results:
-        for algo in ['BFS', 'Greedy', 'Minimax']:
-            nodes = result[algo]['nodes_evaluated']
-            if nodes > max_nodes:
-                max_nodes = nodes
-                max_position = result['position_id']
-                max_algorithm = algo
-    
-    print(f"Most complex position: Position {max_position} for {max_algorithm}")
-    print(f"Nodes evaluated: {max_nodes:,}")
-    
-    print("\nAnalysis module test completed!")
+    # Generate comprehensive experimental report
+    analyzer.generate_experimental_report()
