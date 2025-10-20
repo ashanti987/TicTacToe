@@ -49,7 +49,7 @@ TicTacToe/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/tic-tac-toe-ai.git
+   git clone https://github.com/ashanti987/TicTacToe.git
    cd tic-tac-toe-ai
 
 2. **Install dependencies**
