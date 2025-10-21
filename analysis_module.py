@@ -79,6 +79,153 @@ class TicTacToeAnalyzer:
         plt.tight_layout()
         plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
+
+
+    ### TESTTTTTTTTTTTTTTTT ###
+    def create_search_efficiency_plot(self):
+        """Create line plot showing search efficiency across different game phases."""
+        # Define test positions representing different game phases
+        test_positions = [
+            # Position 0: Empty board (start of game)
+            ([' '] * 9, 'X'),
+            # Position 1: Early game (one move made)
+            (['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], 'O'),
+            # Position 2: Mid game (strategic position)
+            (['X', ' ', ' ', ' ', 'O', ' ', ' ', ' ', 'X'], 'O'),
+            # Position 3: Near win situation
+            (['X', 'X', ' ', ' ', 'O', 'O', ' ', ' ', ' '], 'X'),
+            # Position 4: Defensive position
+            (['X', ' ', ' ', ' ', ' ', ' ', 'O', ' ', 'X'], 'O')
+        ]
+        
+        # Benchmark algorithms on these positions
+        results = self.benchmark_algorithms(test_positions)
+        
+        # Create the line plot
+        fig, ax = plt.subplots(figsize=(12, 7))
+        
+        algorithms = ['BFS', 'Greedy', 'Minimax']
+        colors = ['#64FF64', '#FFA500', '#B464F0']  # Green, Orange, Purple
+        markers = ['o', 's', '^']  # Circle, Square, Triangle
+        line_styles = ['-', '--', '-.']  # Solid, Dashed, Dash-dot
+        
+        # Game phase descriptions for x-axis labels
+        phase_descriptions = [
+            'Empty Board\n(Start)',
+            'Early Game\n(1 move)',
+            'Mid Game\n(Strategic)',
+            'Near Win\n(Attack)',
+            'Defensive\n(Block)'
+        ]
+        
+        for i, algo in enumerate(algorithms):
+            positions = range(len(results))
+            nodes = [result[algo]['nodes_evaluated'] for result in results]
+            
+            # Plot the line with markers
+            ax.plot(positions, nodes, 
+                   marker=markers[i], 
+                   color=colors[i], 
+                   linestyle=line_styles[i],
+                   label=algo, 
+                   linewidth=3, 
+                   markersize=10,
+                   markeredgecolor='black',
+                   markeredgewidth=1)
+        
+        # Customize the plot
+        ax.set_xlabel('Game Phase and Position Complexity', fontsize=12, fontweight='bold')
+        ax.set_ylabel('Nodes Evaluated', fontsize=12, fontweight='bold')
+        ax.set_title('Search Efficiency Across Different Game Phases', 
+                    fontsize=14, fontweight='bold', pad=20)
+        
+        # Set x-axis labels with phase descriptions
+        ax.set_xticks(range(len(phase_descriptions)))
+        ax.set_xticklabels(phase_descriptions, fontsize=10)
+        
+        # Use log scale for y-axis to handle Minimax's large numbers
+        ax.set_yscale('log')
+        ax.set_ylabel('Nodes Evaluated (Log Scale)', fontsize=12, fontweight='bold')
+        
+        # Add grid and legend
+        ax.grid(True, alpha=0.3, which='both', linestyle='--')
+        ax.legend(fontsize=11, framealpha=0.9, loc='upper right')
+        
+        # Add value annotations on points
+        for i, algo in enumerate(algorithms):
+            positions = range(len(results))
+            nodes = [result[algo]['nodes_evaluated'] for result in results]
+            
+            for j, (x, y) in enumerate(zip(positions, nodes)):
+                # Position text slightly above the point
+                va = 'bottom'
+                offset = 0.1 * y  # Dynamic offset based on value
+                
+                ax.annotate(f'{y:,}', 
+                           xy=(x, y), 
+                           xytext=(0, 10 if i != 2 else -15),  # Adjust for Minimax
+                           textcoords='offset points',
+                           ha='center', 
+                           va=va,
+                           fontsize=9,
+                           fontweight='bold',
+                           bbox=dict(boxstyle="round,pad=0.2", 
+                                   facecolor=colors[i], 
+                                   alpha=0.7,
+                                   edgecolor='black'))
+        
+        # Add explanatory text
+        plt.figtext(0.5, 0, 
+                   'Key Insight: Algorithms show distinct computational patterns -\n Greedy maintains minimal evaluation, BFS demonstrates adaptive intelligence, while Minimax exhibits extreme computational demands',
+                   ha='center', fontsize=10, style='italic', color='red', weight='bold')
+        
+        plt.tight_layout()
+        plt.subplots_adjust(bottom=0.15)  # Make room for the footnote
+        plt.savefig('search_efficiency_phases.png', dpi=300, bbox_inches='tight', facecolor='white')
+        plt.show()
+    
+    def benchmark_algorithms(self, test_positions):
+        """
+        Benchmark all algorithms on a set of test positions.
+        
+        Args:
+            test_positions: List of (board_config, current_player) tuples
+        """
+        self.results = []
+        
+        for i, (board_config, player) in enumerate(test_positions):
+            position_results = {'position_id': i, 'board': board_config[:]}
+            
+            for ai_name, ai in [('BFS', self.bfs_ai), 
+                              ('Greedy', self.greedy_ai), 
+                              ('Minimax', self.minimax_ai)]:
+                
+                # Set up the test position
+                self.game.board = board_config[:]
+                self.game.current_player = player
+                self.game.game_over = False
+                self.game.winner = None
+                
+                # Run the algorithm
+                start_time = time.time()
+                move, nodes_evaluated, comp_time = ai.find_move()
+                actual_time = time.time() - start_time
+                
+                position_results[ai_name] = {
+                    'move': move,
+                    'nodes_evaluated': nodes_evaluated,
+                    'computation_time': comp_time,
+                    'actual_time': actual_time
+                }
+            
+            self.results.append(position_results)
+        
+        return self.results
+
+
+
+
+    ### testtttttttttttttt ###
     
     def create_comprehensive_summary_table(self):
         """Create a professional summary table of algorithm properties and performance."""
@@ -124,8 +271,8 @@ class TicTacToeAnalyzer:
         
         df = pd.DataFrame(table_data)
         
-        # Create the table visualization - MAKE TALLER
-        fig, ax = plt.subplots(figsize=(16, 6))  # Changed from (16, 8) to (16, 10)
+        # Create the table visualization 
+        fig, ax = plt.subplots(figsize=(16, 6)) 
         
         ax.axis('tight')
         ax.axis('off')
@@ -139,12 +286,12 @@ class TicTacToeAnalyzer:
             colWidths=[0.07, 0.08, 0.1, 0.1, 0.08, 0.08, 0.06, 0.15, 0.15, 0.1] 
         )
     
-        # Style the table - INCREASE FONT SIZES
+        # Style the table 
         table.auto_set_font_size(False)
-        table.set_fontsize(9)  # Increased from 9 to 10
-        table.scale(1, 1.8)    # Reduced vertical scaling from 2 to 1.8
+        table.set_fontsize(9)  
+        table.scale(1, 1.8)    
     
-        # Header styling - INCREASE HEADER FONT SIZE
+        # Header styling 
         for i in range(len(df.columns)):
             table[(0, i)].set_facecolor('#2E86AB')
             table[(0, i)].set_text_props(weight='bold', color='white', size=8)  # Increased from 10 to 12
@@ -250,6 +397,7 @@ class TicTacToeAnalyzer:
     
     # Generate visualizations
         self.create_performance_comparison_chart()
+        self.create_search_efficiency_plot()  # ADD THIS LINE
         self.create_minimax_paradox_chart()
         self.create_comprehensive_summary_table()
 
