@@ -218,7 +218,7 @@ class MinimaxAI(TicTacToeAI):
             move_value = self._minimax_alpha_beta(
                 temp_board, 
                 get_opponent(current_player), 
-                False,  # Minimizing player's turn
+                True,  # CHANGED to True because AI (O) is maximizing player
                 alpha, 
                 beta,
                 depth=0
@@ -288,7 +288,7 @@ class MinimaxAI(TicTacToeAI):
         # Check wins
         for player in ['X', 'O']:
             if self._is_winning_state(board, player):
-                return 10 if player == 'X' else -10  # Assuming X is AI
+                return 10 if player == 'O' else -10  # Assuming O is AI
         
         # Check draw
         if ' ' not in board:

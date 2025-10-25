@@ -20,40 +20,45 @@ class TicTacToeAnalyzer:
         self.greedy_ai = GreedyAI(self.game)
         self.minimax_ai = MinimaxAI(self.game)
         self.results = []
-    
+
+    ### TESTTTTTTTTTT# 
     def create_performance_comparison_chart(self):
         """Create enhanced bar charts comparing algorithm performance based on experimental data."""
         # Use your actual experimental data
         algorithms = ['BFS', 'Greedy', 'Minimax']
-        
+    
         # Your experimental averages
-        avg_nodes = [19, 19, 2500]  # From your data
-        avg_times = [0.0064, 0.0003, 0.0133]  # From your data
-        win_rates = [67, 33, 0]  # From your data
+        avg_nodes = [765, 19, 4589]  # From your data
+        avg_times = [0.005, 0.001, 0.022]  # From your data
+        
+        # NEW: Win/Draw/Loss rates for stacked bar chart
+        win_rates = [67, 67, 67]      # All have same win rate
+        draw_rates = [0, 33, 33]      # Draw rates differ
+        loss_rates = [33, 0, 0]       # Loss rates reveal true differences
         
         # Create figure with three subplots
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 7))  # Slightly wider
         
         # Colors matching your Pygame interface
         colors = ['#64FF64', '#FFA500', '#B464F0']  # Green, Orange, Purple
+        outcome_colors = ['#2E8B57', '#FFD700', '#FF4444']  # Green (win), Gold (draw), Red (loss)
         
-        # Nodes evaluated comparison
+        # Nodes evaluated comparison (keep same)
         bars1 = ax1.bar(algorithms, avg_nodes, color=colors, alpha=0.8)
         ax1.set_title('Average Nodes Evaluated per Game', fontsize=14, fontweight='bold')
-        ax1.set_ylabel('Number of Nodes', fontsize=12)
+        ax1.set_ylabel('Number of Nodes', fontsize=12, labelpad=15) # Added labelpad
         ax1.grid(axis='y', alpha=0.3)
         ax1.tick_params(axis='x', rotation=45)
         
-        # Add value labels on bars
         for bar in bars1:
             height = bar.get_height()
             ax1.text(bar.get_x() + bar.get_width()/2., height + max(avg_nodes)*0.01,
                     f'{height:,.0f}', ha='center', va='bottom', fontweight='bold')
         
-        # Computation time comparison
+        # Computation time comparison (keep same)
         bars2 = ax2.bar(algorithms, avg_times, color=colors, alpha=0.8)
         ax2.set_title('Average Computation Time per Game', fontsize=14, fontweight='bold')
-        ax2.set_ylabel('Time (seconds)', fontsize=12)
+        ax2.set_ylabel('Time (seconds)', fontsize=12, labelpad=15) # Added labelpad
         ax2.grid(axis='y', alpha=0.3)
         ax2.tick_params(axis='x', rotation=45)
         
@@ -62,23 +67,36 @@ class TicTacToeAnalyzer:
             ax2.text(bar.get_x() + bar.get_width()/2., height + max(avg_times)*0.01,
                     f'{height:.4f}s', ha='center', va='bottom', fontweight='bold')
         
-        # Win rate comparison
-        bars3 = ax3.bar(algorithms, win_rates, color=colors, alpha=0.8)
-        ax3.set_title('Win Rate Against Human Players', fontsize=14, fontweight='bold')
-        ax3.set_ylabel('Win Rate (%)', fontsize=12)
+        # NEW: Outcome Distribution (Stacked Bar Chart)
+        bar_width = 0.6
+        x_pos = np.arange(len(algorithms))
+        
+        # Create stacked bars
+        bars_win = ax3.bar(x_pos, win_rates, bar_width, label='Wins', color=outcome_colors[0], alpha=0.8)
+        bars_draw = ax3.bar(x_pos, draw_rates, bar_width, bottom=win_rates, label='Draws', color=outcome_colors[1], alpha=0.8)
+        bars_loss = ax3.bar(x_pos, loss_rates, bar_width, bottom=np.array(win_rates) + np.array(draw_rates), 
+                        label='Losses', color=outcome_colors[2], alpha=0.8)
+        
+        ax3.set_title('Game Outcome Distribution', fontsize=14, fontweight='bold')
+        ax3.set_ylabel('Percentage (%)', fontsize=12, labelpad=15) # Added labelpad
         ax3.set_ylim(0, 100)
+        ax3.set_xticks(x_pos)
+        ax3.set_xticklabels(algorithms)
         ax3.grid(axis='y', alpha=0.3)
-        ax3.tick_params(axis='x', rotation=45)
+        ax3.legend(loc='upper right')
         
-        for bar in bars3:
-            height = bar.get_height()
-            ax3.text(bar.get_x() + bar.get_width()/2., height + 2,
-                    f'{height}%', ha='center', va='bottom', fontweight='bold',
-                    color='red' if height == 0 else 'black')
+        # Add value annotations on each segment
+        for i, (win, draw, loss) in enumerate(zip(win_rates, draw_rates, loss_rates)):
+            ax3.text(i, win/2, f'{win}%', ha='center', va='center', fontweight='bold', color='white')
+            ax3.text(i, win + draw/2, f'{draw}%', ha='center', va='center', fontweight='bold', color='black')
+            if loss > 0:
+                ax3.text(i, win + draw + loss/2, f'{loss}%', ha='center', va='center', fontweight='bold', color='white')
         
-        plt.tight_layout()
+        plt.tight_layout(pad=3.0) # Increased padding from default to 3.0
         plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
+
+    ### TESTTTT - OCTOBER 25 
 
 
     ### TESTTTTTTTTTTTTTTTT ###
@@ -234,45 +252,51 @@ class TicTacToeAnalyzer:
             {
                 'Algorithm': 'BFS',
                 'Search Type': 'Uninformed',
-                'Theoretical Optimal': 'No',
-                'Theoretical Complete': 'Yes',
-                'Avg Nodes/Game': '19',
-                'Avg Time/Game': '0.0064s',
+                'Optimal': 'No',
+                'Complete': 'Yes',
+                'Avg Nodes/Game': '765',
+                'Avg Time/Game': '0.005s',
                 'Win Rate': '67%',
+                'Draw Rate': '0%',
+                'Loss Rate': '33%',
                 'Strength': 'Excellent mistake exploitation',
                 'Weakness': 'Vulnerable to optimal play',
-                'Practical Performance': 'Excellent'
+                'Practical Performance': 'Good(Opportunistic)'
             },
             {
                 'Algorithm': 'Greedy',
                 'Search Type': 'Informed',
-                'Theoretical Optimal': 'No',
-                'Theoretical Complete': 'No',
+                'Optimal': 'No',
+                'Complete': 'No',
                 'Avg Nodes/Game': '19',
-                'Avg Time/Game': '0.0003s',
-                'Win Rate': '33%',
+                'Avg Time/Game': '0.001s',
+                'Win Rate': '67%',
+                'Draw Rate': '33%',
+                'Loss Rate': '0%',
                 'Strength': 'Never loses, extremely fast',
                 'Weakness': 'Risk-averse, frequent draws',
-                'Practical Performance': 'Good'
+                'Practical Performance': 'Good(Aggressive)'
             },
             {
                 'Algorithm': 'Minimax',
                 'Search Type': 'Adversarial',
-                'Theoretical Optimal': 'Yes',
-                'Theoretical Complete': 'Yes',
-                'Avg Nodes/Game': '2,500',
-                'Avg Time/Game': '0.0133s',
-                'Win Rate': '0%',
-                'Strength': 'Theoretically optimal',
-                'Weakness': 'Practical implementation gaps',
-                'Practical Performance': 'Poor'
+                'Optimal': 'Yes',
+                'Complete': 'Yes',
+                'Avg Nodes/Game': '4,589',
+                'Avg Time/Game': '0.022s',
+                'Win Rate': '67%',
+                'Draw Rate': '33%',
+                'Loss Rate': '0%',
+                'Strength': 'Never loses',
+                'Weakness': '241x computational overhead',
+                'Practical Performance': 'Excellent(Conservative)'
             }
         ]
         
         df = pd.DataFrame(table_data)
         
         # Create the table visualization 
-        fig, ax = plt.subplots(figsize=(16, 6)) 
+        fig, ax = plt.subplots(figsize=(18, 6)) ## change from (16, 6) to be wider to accomodate new columns
         
         ax.axis('tight')
         ax.axis('off')
@@ -283,7 +307,9 @@ class TicTacToeAnalyzer:
             colLabels=df.columns,
             cellLoc='center',
             loc='center',
-            colWidths=[0.07, 0.08, 0.1, 0.1, 0.08, 0.08, 0.06, 0.15, 0.15, 0.1] 
+            colWidths=[0.06, 0.07, 0.05, 0.05, 0.11, 0.11, 0.05, 0.05, 0.05, 0.14, 0.14, 0.14]
+            
+            ###colWidths=[0.07, 0.08, 0.1, 0.1, 0.08, 0.08, 0.06, 0.15, 0.15, 0.1] 
         )
     
         # Style the table 
@@ -303,14 +329,16 @@ class TicTacToeAnalyzer:
             for j in range(len(df.columns)):
                 table[(i, j)].set_facecolor(color)
                 
-                # Highlight key findings
+                # Highlight key performance metrics
                 cell_text = table[(i, j)].get_text().get_text()
-                if '0%' in cell_text:
-                    table[(i, j)].set_text_props(weight='bold', color='red')
-                elif '67%' in cell_text:
+                if '0%' in cell_text and 'Loss' in df.columns[j]:
                     table[(i, j)].set_text_props(weight='bold', color='green')
-                elif '33%' in cell_text:
+                elif '33%' in cell_text and 'Loss' in df.columns[j]:
+                    table[(i, j)].set_text_props(weight='bold', color='red')
+                elif '67%' in cell_text and 'Win' in df.columns[j]:
                     table[(i, j)].set_text_props(weight='bold', color='blue')
+                '''elif '4,589' in cell_text:
+                    table[(i, j)].set_text_props(weight='bold', color='orange')'''
                 '''elif '2,500' in cell_text:
                     table[(i, j)].set_text_props(weight='bold', color='orange')'''
         
@@ -318,78 +346,27 @@ class TicTacToeAnalyzer:
              fontsize=14, fontweight='bold', pad=10)
     
         # Add both key findings and conclusion
-        plt.figtext(0.5, 0.2, 
-                'Key Finding: Minimax shows 0% win rate despite theoretical optimality - revealing significant theory-practice gap',
+        plt.figtext(0.5, 0.3, 
+                'Key Finding: All algorithms achieved 67% win rates, but loss/draw profiles reveal fundamental risk differences',
                 ha='center', fontsize=9, style='italic', color='red', weight='bold')
         
-        plt.figtext(0.5, 0.1, 
-                'Conclusion: Simpler algorithms (BFS, Greedy) outperformed theoretically optimal Minimax in practical gameplay',
+        plt.figtext(0.5, 0.2, 
+                'Insight: Minimax demonstrates risk-averse optimality (0% losses) while Greedy shows aggressive local optimization and BFS provides balanced efficiency',
                 ha='center', fontsize=9, style='italic', color='blue', weight='bold')
         
+        plt.figtext(0.5, 0.1, 
+                'Conclusion: Algorithm selection depends on strategic philosophy - Minimax for safety, Greedy for aggression, BFS for balanced performance',
+                ha='center', fontsize=9, style='italic', color='green', weight='bold')
+
         plt.tight_layout()
+        ## just added##
+        plt.subplots_adjust(bottom=0.3)  # Increased bottom margin for three text lines
+        ## just addedd 
+
         plt.savefig('algorithm_comparison_table.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
         
         return df
-        
-    def create_minimax_paradox_chart(self):
-        """Create a visualization highlighting the Minimax paradox."""
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-        
-        algorithms = ['BFS', 'Greedy', 'Minimax']
-        
-        # Computational cost vs effectiveness
-        computational_cost = [19, 19, 2500]  # Nodes
-        effectiveness = [67, 33, 0]  # Win rate
-        
-        # Scatter plot: Cost vs Effectiveness
-        scatter = ax1.scatter(computational_cost, effectiveness, 
-                            s=300, c=['green', 'orange', 'purple'], alpha=0.7)
-        ax1.set_xlabel('Computational Cost (Nodes Evaluated)', fontsize=12)
-        ax1.set_ylabel('Effectiveness (Win Rate %)', fontsize=12)
-        ax1.set_title('The Minimax Paradox: Cost vs Effectiveness', fontsize=14, fontweight='bold')
-        ax1.grid(True, alpha=0.3)
-        ax1.set_xscale('log')  # Log scale to handle large differences
-        
-        # Annotate points
-        for i, algo in enumerate(algorithms):
-            ax1.annotate(algo, (computational_cost[i], effectiveness[i]),
-                        xytext=(10, 10), textcoords='offset points',
-                        fontweight='bold', fontsize=11)
-        
-        # Performance across play styles
-        play_styles = ['Optimal', 'Random', 'Suboptimal']
-        bfs_performance = [0, 100, 100]  # Win rates
-        greedy_performance = [0, 100, 0]   # Win/Draw rates
-        minimax_performance = [0, 0, 0]    # Always lost
-        
-        x = np.arange(len(play_styles))
-        width = 0.25
-        
-        bars1 = ax2.bar(x - width, bfs_performance, width, label='BFS', color='green', alpha=0.8)
-        bars2 = ax2.bar(x, greedy_performance, width, label='Greedy', color='orange', alpha=0.8)
-        bars3 = ax2.bar(x + width, minimax_performance, width, label='Minimax', color='purple', alpha=0.8)
-        
-        ax2.set_xlabel('Human Play Style', fontsize=12)
-        ax2.set_ylabel('AI Win Rate (%)', fontsize=12)
-        ax2.set_title('Algorithm Performance Across Play Styles', fontsize=14, fontweight='bold')
-        ax2.set_xticks(x)
-        ax2.set_xticklabels(play_styles)
-        ax2.legend()
-        ax2.grid(True, alpha=0.3)
-        ax2.set_ylim(0, 120)
-        
-        # Add value labels
-        for bars in [bars1, bars2, bars3]:
-            for bar in bars:
-                height = bar.get_height()
-                if height > 0:
-                    ax2.text(bar.get_x() + bar.get_width()/2., height + 3,
-                            f'{height}%', ha='center', va='bottom', fontweight='bold')
-        
-        plt.tight_layout()
-        plt.savefig('minimax_paradox.png', dpi=300, bbox_inches='tight', facecolor='white')
-        plt.show()
     
     def generate_experimental_report(self):
         """Generate a comprehensive report based on experimental data."""
@@ -397,8 +374,7 @@ class TicTacToeAnalyzer:
     
     # Generate visualizations
         self.create_performance_comparison_chart()
-        self.create_search_efficiency_plot()  # ADD THIS LINE
-        self.create_minimax_paradox_chart()
+        self.create_search_efficiency_plot()  
         self.create_comprehensive_summary_table()
 
 # Main execution
