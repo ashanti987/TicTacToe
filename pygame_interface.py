@@ -399,7 +399,7 @@ class PygameVisualizer:
             self.draw_board()
             self.draw_algorithm_info()
             self.draw_metrics()
-            self.draw_game_info()  # Now includes instructions
+            self.draw_game_info()  
             
             pygame.display.flip()
             self.clock.tick(60)  # 60 FPS

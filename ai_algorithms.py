@@ -27,7 +27,7 @@ class BFSAI(TicTacToeAI):
     
     def find_move(self):
         """
-        Find the move that leads to shortest path to victory.
+        Finds the move that leads to shortest path to victory.
         Returns (move, nodes_evaluated, computation_time)
         """
         start_time = time.time()
@@ -48,9 +48,8 @@ class BFSAI(TicTacToeAI):
             temp_board = self.game.board[:]
             temp_board[move] = current_player
             
-            ##  i just added nodes searched hee
             path_length, nodes_searched = self._bfs_shortest_path(temp_board, current_player)
-            self.nodes_evaluated += nodes_searched ## i just changed this from +=1 to = nodes_searched
+            self.nodes_evaluated += nodes_searched 
             
             if path_length is not None and path_length < shortest_path_length:
                 shortest_path_length = path_length
@@ -70,22 +69,20 @@ class BFSAI(TicTacToeAI):
         """
         queue = deque()
         visited = set()
-        nodes_searched = 0 ## just added this here. tracks nodesin BFS
+        nodes_searched = 0 
 
         initial_state = (tuple(board), player, 0)  # (board, current_player, path_length)
         queue.append(initial_state)
         visited.add(tuple(board))
-        nodes_searched += 1 ## just added this here
+        nodes_searched += 1 
         
         while queue:
             current_board, current_player, path_length = queue.popleft()
-            ## just added
             nodes_searched += 1
-            ##just added 
-
+            
             # Check if this is a winning state for the original player
             if self._is_winning_state(current_board, player):
-                return path_length, nodes_searched ##just added noodes search here
+                return path_length, nodes_searched 
             
             # Get available moves
             available_moves = [i for i, spot in enumerate(current_board) if spot == ' ']
@@ -175,7 +172,7 @@ class GreedyAI(TicTacToeAI):
             
             # Score based on potential for winning
             if opponent_count == 0:
-                # No opponent pieces - this line is promising
+                # No opponent pieces 
                 score += player_count ** 2
             elif player_count == 0:
                 # Opponent has pieces here - defensive penalty
@@ -218,7 +215,7 @@ class MinimaxAI(TicTacToeAI):
             move_value = self._minimax_alpha_beta(
                 temp_board, 
                 get_opponent(current_player), 
-                True,  # CHANGED to True because AI (O) is maximizing player
+                True,  
                 alpha, 
                 beta,
                 depth=0

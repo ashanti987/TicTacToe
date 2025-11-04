@@ -21,32 +21,31 @@ class TicTacToeAnalyzer:
         self.minimax_ai = MinimaxAI(self.game)
         self.results = []
 
-    ### TESTTTTTTTTTT# 
     def create_performance_comparison_chart(self):
         """Create enhanced bar charts comparing algorithm performance based on experimental data."""
-        # Use your actual experimental data
+        # actual experimental data
         algorithms = ['BFS', 'Greedy', 'Minimax']
     
-        # Your experimental averages
-        avg_nodes = [765, 19, 4589]  # From your data
-        avg_times = [0.005, 0.001, 0.022]  # From your data
+        # experimental averages
+        avg_nodes = [765, 19, 4589]  # From game data
+        avg_times = [0.005, 0.001, 0.022]  # From game data
         
-        # NEW: Win/Draw/Loss rates for stacked bar chart
+        # Win/Draw/Loss rates 
         win_rates = [67, 67, 67]      # All have same win rate
         draw_rates = [0, 33, 33]      # Draw rates differ
         loss_rates = [33, 0, 0]       # Loss rates reveal true differences
         
         # Create figure with three subplots
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 7))  # Slightly wider
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 7))  
         
-        # Colors matching your Pygame interface
-        colors = ['#64FF64', '#FFA500', '#B464F0']  # Green, Orange, Purple
+        # Colors matching Pygame interface
+        colors = ['#64FF64', '#FFA500', '#B464F0']  
         outcome_colors = ['#2E8B57', '#FFD700', '#FF4444']  # Green (win), Gold (draw), Red (loss)
         
         # Nodes evaluated comparison (keep same)
         bars1 = ax1.bar(algorithms, avg_nodes, color=colors, alpha=0.8)
         ax1.set_title('Average Nodes Evaluated per Game', fontsize=14, fontweight='bold')
-        ax1.set_ylabel('Number of Nodes', fontsize=12, labelpad=15) # Added labelpad
+        ax1.set_ylabel('Number of Nodes', fontsize=12, labelpad=15) 
         ax1.grid(axis='y', alpha=0.3)
         ax1.tick_params(axis='x', rotation=45)
         
@@ -55,10 +54,10 @@ class TicTacToeAnalyzer:
             ax1.text(bar.get_x() + bar.get_width()/2., height + max(avg_nodes)*0.01,
                     f'{height:,.0f}', ha='center', va='bottom', fontweight='bold')
         
-        # Computation time comparison (keep same)
+        # Computation time comparison 
         bars2 = ax2.bar(algorithms, avg_times, color=colors, alpha=0.8)
         ax2.set_title('Average Computation Time per Game', fontsize=14, fontweight='bold')
-        ax2.set_ylabel('Time (seconds)', fontsize=12, labelpad=15) # Added labelpad
+        ax2.set_ylabel('Time (seconds)', fontsize=12, labelpad=15) 
         ax2.grid(axis='y', alpha=0.3)
         ax2.tick_params(axis='x', rotation=45)
         
@@ -67,7 +66,7 @@ class TicTacToeAnalyzer:
             ax2.text(bar.get_x() + bar.get_width()/2., height + max(avg_times)*0.01,
                     f'{height:.4f}s', ha='center', va='bottom', fontweight='bold')
         
-        # NEW: Outcome Distribution (Stacked Bar Chart)
+        # Outcome Distribution (Stacked Bar Chart)
         bar_width = 0.6
         x_pos = np.arange(len(algorithms))
         
@@ -78,7 +77,7 @@ class TicTacToeAnalyzer:
                         label='Losses', color=outcome_colors[2], alpha=0.8)
         
         ax3.set_title('Game Outcome Distribution', fontsize=14, fontweight='bold')
-        ax3.set_ylabel('Percentage (%)', fontsize=12, labelpad=15) # Added labelpad
+        ax3.set_ylabel('Percentage (%)', fontsize=12, labelpad=15) 
         ax3.set_ylim(0, 100)
         ax3.set_xticks(x_pos)
         ax3.set_xticklabels(algorithms)
@@ -92,14 +91,10 @@ class TicTacToeAnalyzer:
             if loss > 0:
                 ax3.text(i, win + draw + loss/2, f'{loss}%', ha='center', va='center', fontweight='bold', color='white')
         
-        plt.tight_layout(pad=3.0) # Increased padding from default to 3.0
+        plt.tight_layout(pad=3.0) 
         plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
 
-    ### TESTTTT - OCTOBER 25 
-
-
-    ### TESTTTTTTTTTTTTTTTT ###
     def create_search_efficiency_plot(self):
         """Create line plot showing search efficiency across different game phases."""
         # Define test positions representing different game phases
@@ -198,7 +193,7 @@ class TicTacToeAnalyzer:
                    ha='center', fontsize=10, style='italic', color='red', weight='bold')
         
         plt.tight_layout()
-        plt.subplots_adjust(bottom=0.15)  # Make room for the footnote
+        plt.subplots_adjust(bottom=0.15) 
         plt.savefig('search_efficiency_phases.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
     
@@ -239,11 +234,6 @@ class TicTacToeAnalyzer:
             self.results.append(position_results)
         
         return self.results
-
-
-
-
-    ### testtttttttttttttt ###
     
     def create_comprehensive_summary_table(self):
         """Create a professional summary table of algorithm properties and performance."""
@@ -296,7 +286,7 @@ class TicTacToeAnalyzer:
         df = pd.DataFrame(table_data)
         
         # Create the table visualization 
-        fig, ax = plt.subplots(figsize=(18, 6)) ## change from (16, 6) to be wider to accomodate new columns
+        fig, ax = plt.subplots(figsize=(18, 6)) 
         
         ax.axis('tight')
         ax.axis('off')
@@ -308,7 +298,6 @@ class TicTacToeAnalyzer:
             cellLoc='center',
             loc='center',
             colWidths=[0.06, 0.07, 0.05, 0.05, 0.11, 0.11, 0.05, 0.05, 0.05, 0.14, 0.14, 0.14]
-            
             ###colWidths=[0.07, 0.08, 0.1, 0.1, 0.08, 0.08, 0.06, 0.15, 0.15, 0.1] 
         )
     
@@ -320,7 +309,7 @@ class TicTacToeAnalyzer:
         # Header styling 
         for i in range(len(df.columns)):
             table[(0, i)].set_facecolor('#2E86AB')
-            table[(0, i)].set_text_props(weight='bold', color='white', size=8)  # Increased from 10 to 12
+            table[(0, i)].set_text_props(weight='bold', color='white', size=8)  
     
         
         # Row styling with alternating colors
@@ -337,10 +326,6 @@ class TicTacToeAnalyzer:
                     table[(i, j)].set_text_props(weight='bold', color='red')
                 elif '67%' in cell_text and 'Win' in df.columns[j]:
                     table[(i, j)].set_text_props(weight='bold', color='blue')
-                '''elif '4,589' in cell_text:
-                    table[(i, j)].set_text_props(weight='bold', color='orange')'''
-                '''elif '2,500' in cell_text:
-                    table[(i, j)].set_text_props(weight='bold', color='orange')'''
         
         plt.title('Tic-Tac-Toe AI Algorithm Comprehensive Comparison\nTheory vs. Practical Performance', 
              fontsize=14, fontweight='bold', pad=10)
@@ -359,10 +344,7 @@ class TicTacToeAnalyzer:
                 ha='center', fontsize=9, style='italic', color='green', weight='bold')
 
         plt.tight_layout()
-        ## just added##
-        plt.subplots_adjust(bottom=0.3)  # Increased bottom margin for three text lines
-        ## just addedd 
-
+        plt.subplots_adjust(bottom=0.3)  
         plt.savefig('algorithm_comparison_table.png', dpi=300, bbox_inches='tight', facecolor='white')
         plt.show()
         
@@ -379,8 +361,8 @@ class TicTacToeAnalyzer:
 
 # Main execution
 if __name__ == "__main__":
-    print("Enhanced Tic-Tac-Toe AI Analysis Module")  # KEEP
-    print("=" * 50)  # KEEP
+    print("Enhanced Tic-Tac-Toe AI Analysis Module")  
+    print("=" * 50)  
     
     analyzer = TicTacToeAnalyzer()
     
