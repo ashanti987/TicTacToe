@@ -303,7 +303,7 @@ class PygameVisualizer:
                     'current_move': move
                 })
                 
-                # Restore detailed terminal logging
+                # detailed terminal logging
                 print(f"\n--- Move {self.move_count} ---")
                 print(f"{self.current_ai.__class__.__name__} (O) played at position {move}")
                 print(f"  Nodes evaluated: {nodes:,}")
@@ -407,7 +407,7 @@ class PygameVisualizer:
         pygame.quit()
         sys.exit()
 
-# Main execution - Restore detailed terminal output
+# Main execution 
 if __name__ == "__main__":
     print("Starting Enhanced Tic-Tac-Toe AI Comparison")
     print("=" * 60)
