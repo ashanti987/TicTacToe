@@ -229,7 +229,50 @@ class MinimaxAI(TicTacToeAI):
         
         self.computation_time = time.time() - start_time
         return best_move, self.nodes_evaluated, self.computation_time
-    
+   
+    ##### TESTING ALPHA BETA PRUNNGAND NOOT PRUNING - NOVEMBER 3
+
+    def find_move_no_pruning(self):
+        """
+        Find optimal move using Minimax WITHOUT alpha-beta pruning.
+        Returns (move, nodes_evaluated, computation_time)
+        """
+        start_time = time.time()
+        self.reset_stats()
+        
+        current_player = self.game.current_player
+        available_moves = self.game.get_available_moves()
+        
+        if not available_moves:
+            return None, 0, 0
+        
+        best_move = None
+        best_value = float('-inf')
+        
+        for move in available_moves:
+            # Simulate making this move
+            temp_board = self.game.board[:]
+            temp_board[move] = current_player
+            
+            # Evaluate this move with minimax WITHOUT pruning
+            move_value = self._minimax_no_pruning(
+                temp_board, 
+                get_opponent(current_player), 
+                True,  
+                depth=0
+            )
+            self.nodes_evaluated += 1
+            
+            if move_value > best_value:
+                best_value = move_value
+                best_move = move
+        
+        self.computation_time = time.time() - start_time
+        return best_move, self.nodes_evaluated, self.computation_time
+
+   #### TESTINGGG ALPHA BETA - NOVEMBER 3
+
+
     def _minimax_alpha_beta(self, board, current_player, is_maximizing, alpha, beta, depth):
         """Minimax algorithm with Alpha-Beta pruning."""
         self.nodes_evaluated += 1
@@ -279,7 +322,47 @@ class MinimaxAI(TicTacToeAI):
                 if beta <= alpha:
                     break  # Alpha cutoff
             return min_eval
-    
+
+    def _minimax_no_pruning(self, board, current_player, is_maximizing, depth):
+            """Minimax algorithm WITHOUT Alpha-Beta pruning."""
+            self.nodes_evaluated += 1
+            
+            # Check terminal states (same as before)
+            game_result = self._check_terminal_state(board)
+            if game_result is not None:
+                return game_result
+            
+            available_moves = [i for i, spot in enumerate(board) if spot == ' ']
+            
+            if is_maximizing:
+                max_eval = float('-inf')
+                for move in available_moves:
+                    new_board = list(board)
+                    new_board[move] = current_player
+                    
+                    eval = self._minimax_no_pruning(
+                        new_board, 
+                        get_opponent(current_player), 
+                        False, 
+                        depth + 1
+                    )
+                    max_eval = max(max_eval, eval)
+                return max_eval
+            else:
+                min_eval = float('inf')
+                for move in available_moves:
+                    new_board = list(board)
+                    new_board[move] = current_player
+                    
+                    eval = self._minimax_no_pruning(
+                        new_board, 
+                        get_opponent(current_player), 
+                        True, 
+                        depth + 1
+                    )
+                    min_eval = min(min_eval, eval)
+                return min_eval
+
     def _check_terminal_state(self, board):
         """Check if board is terminal state and return utility value."""
         # Check wins

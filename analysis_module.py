@@ -235,6 +235,88 @@ class TicTacToeAnalyzer:
         
         return self.results
     
+    def create_pruning_efficiency_chart(self):
+        """Create visualization showing alpha-beta pruning efficiency across different game phases."""
+        
+        test_positions = [
+            # Early game (deep search)
+            (['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], 'O'),
+            # Mid game (medium search)  
+            (['X', ' ', ' ', ' ', 'O', ' ', ' ', ' ', 'X'], 'O'),
+            # Near win (shallow search)
+            (['X', 'X', ' ', ' ', 'O', 'O', ' ', ' ', ' '], 'X'),
+        ]
+        
+        position_names = ['Early Game', 'Mid Game', 'Near Win']
+        nodes_with_pruning = []
+        nodes_without_pruning = []
+        
+        print("Testing pruning efficiency...")
+        for i, (board_config, player) in enumerate(test_positions):
+            # Test WITH pruning
+            self.game.board = board_config[:]
+            self.game.current_player = player
+            move, nodes_pruning, time_pruning = self.minimax_ai.find_move()
+            nodes_with_pruning.append(nodes_pruning)
+            print(f"With pruning: {nodes_pruning} nodes")
+            
+            # Test WITHOUT pruning
+            self.game.board = board_config[:]  # Reset
+            self.game.current_player = player
+            move, nodes_no_pruning, time_no_pruning = self.minimax_ai.find_move_no_pruning()
+            nodes_without_pruning.append(nodes_no_pruning)
+            print(f"Without pruning: {nodes_no_pruning} nodes")
+        
+        # Create visualization
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Plot 1: Node comparison
+        x_pos = range(len(position_names))
+        width = 0.35
+        
+        bars1 = ax1.bar(x_pos, nodes_without_pruning, width, label='Without Pruning', color='red', alpha=0.7)
+        bars2 = ax1.bar([p + width for p in x_pos], nodes_with_pruning, width, label='With Alpha-Beta', color='green', alpha=0.7)
+        
+        ax1.set_xlabel('Game Phase')
+        ax1.set_ylabel('Nodes Evaluated')
+        ax1.set_title('Alpha-Beta Pruning: Node Reduction', fontsize=14, fontweight='bold')
+        ax1.set_xticks([p + width/2 for p in x_pos])
+        ax1.set_xticklabels(position_names)
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+        
+        # Add value labels
+        for bars in [bars1, bars2]:
+            for bar in bars:
+                height = bar.get_height()
+                ax1.text(bar.get_x() + bar.get_width()/2., height + max(nodes_without_pruning)*0.01,
+                        f'{height:,}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+        
+        # Plot 2: Pruning efficiency
+        pruning_efficiency = [(1 - nodes_with_pruning[i]/nodes_without_pruning[i]) * 100 
+                            for i in range(len(nodes_with_pruning))]
+        
+        bars3 = ax2.bar(x_pos, pruning_efficiency, color='purple', alpha=0.7)
+        ax2.set_xlabel('Game Phase')
+        ax2.set_ylabel('Nodes Eliminated (%)')
+        ax2.set_title('Pruning Efficiency', fontsize=14, fontweight='bold')
+        ax2.set_xticks(x_pos)
+        ax2.set_xticklabels(position_names)
+        ax2.set_ylim(0, 100)
+        ax2.grid(True, alpha=0.3)
+        
+        for i, bar in enumerate(bars3):
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width()/2., height + 2,
+                    f'{height:.1f}%', ha='center', va='bottom', fontweight='bold')
+            ax2.text(bar.get_x() + bar.get_width()/2., height/2,
+                    f'Saved {nodes_without_pruning[i]-nodes_with_pruning[i]:,} nodes', 
+                    ha='center', va='center', color='white', fontweight='bold')
+        
+        plt.tight_layout()
+        plt.savefig('pruning_efficiency.png', dpi=300, bbox_inches='tight', facecolor='white')
+        plt.show()
+
     def create_comprehensive_summary_table(self):
         """Create a professional summary table of algorithm properties and performance."""
         # Algorithm properties and experimental results
@@ -357,6 +439,7 @@ class TicTacToeAnalyzer:
     # Generate visualizations
         self.create_performance_comparison_chart()
         self.create_search_efficiency_plot()  
+        self.create_pruning_efficiency_chart() ### testingggg november 3
         self.create_comprehensive_summary_table()
 
 # Main execution
